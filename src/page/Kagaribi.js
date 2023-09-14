@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef }  from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
+import firebase from "firebase/app";
+import { storage } from "../firebase";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+
 import axios from "axios";
 
 import Test from '../components/test'
@@ -58,19 +62,41 @@ function Kagaribi() {
             setIsRecording(true);
         }
         else{
-            stopRecording();
-            setIsRecording(false);
-            
+            await stopRecording();
+            await setIsRecording(false);
         }
     };
 
     //以下は再生処理
+    /*
     const playWavFile = async() => {
+        var listenblob =  await getBlobFromBlobURL();
+        var listenwav = await getWavfromBlob(listenblob);
+        console.log(listenblob);
+        const audio = await new Audio(URL.createObjectURL(listenwav));
+        await audio.play();
+    }
+    */
+
+    //以下は保存処理
+    const saveWavFile = async() => {
+        var myblob =  await getBlobFromBlobURL();
+        var mywav = await getWavfromBlob(myblob);
+        const myaudio = await new Audio(URL.createObjectURL(mywav));
+        const storageRef = ref(storage, `audios/${myaudio.name}`);
         var myblob =  await getBlobFromBlobURL();
         var mywav = await getWavfromBlob(myblob);
         console.log(mywav);
         const audio = await new Audio(URL.createObjectURL(mywav));
         await audio.play();
+        await uploadBytes(storageRef, myaudio)
+            .then((snapshot) => {
+                console.log("アップロードに成功しました");
+            })
+            .catch((error) => {
+                console.log("アップロードに失敗しました");
+            });
+        
     }
 
     
@@ -113,9 +139,9 @@ function Kagaribi() {
                 {isRecording ? "録音中" : "録音する"}
                 </button>
             </div>
-          
+
             <div>
-                <button onClick={playWavFile}>再生</button>
+                <button onClick={saveWavFile}>送信</button>
             </div>
 
             <div className="bg-red-400">
