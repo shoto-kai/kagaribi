@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
-import firebase from "firebase/app";
 import { storage, db } from "../firebase";
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { collection, setDoc, getDoc, doc } from "firebase/firestore"; 
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { collection, setDoc, getDoc, doc } from "firebase/firestore";
 import axios from "axios";
 
 import CampFire from '../components/CampFire'
@@ -25,6 +24,7 @@ function Kagaribi() {
 
 
     };
+    const [isAllowaudio, setIsAllowaudio] = useState(false)
 
     //録音機能
     const renderFlagRef = useRef(false);
@@ -50,19 +50,24 @@ function Kagaribi() {
     useEffect(() => {
         // この関数が6分ごとに呼び出される
         function callEverySixMinutes() {
+            
           //console.log(fireLevel);
           checkFire();
           selectSound();
           patipati();
+            if (isAllowaudio) {
+                selectSound()
+            }
+
         }
-    
+
         const intervalId = setInterval(callEverySixMinutes, 10000);
-    
+
         // コンポーネントがアンマウントされたときに、タイマーをクリアする
         return () => {
-          clearInterval(intervalId);
+            clearInterval(intervalId);
         };
-      }, [fireLevel]);
+    }, [fireLevel]);
 
     useEffect(() => {
           checkFire();
@@ -129,23 +134,19 @@ function Kagaribi() {
             .catch((error) => {
                 console.log("音声アップロードに失敗しました");
             });
-    
-        
+
         try {
             const docRef = await setDoc(doc(collection(db, "days"), "today"), {
-              created_date:nowdate
+                created_date: nowdate
             });
             console.log("hi");
-          } catch (e) {
+        } catch (e) {
             console.error("oh");
-          }
+        }
         setFireLevel(9);
-
-
     }
 
     async function getAllWavPath() {
-        
         const listRef = ref(storage, `audios`);
         const path_list = [];
         await listAll(listRef)
@@ -156,7 +157,6 @@ function Kagaribi() {
                 });
                 res.items.forEach(async (itemRef) => {
                     await path_list.push(itemRef._location.path_);
-
                 });
             }).catch((error) => {
                 console.log("Uh-oh, an error occurred!");
@@ -166,7 +166,6 @@ function Kagaribi() {
 
     async function selectSound() {
         checkFire();
-        const firestorage = storage;
         const path_list = await getAllWavPath();
         const selected_sound_path = path_list[Math.floor(Math.random() * path_list.length)];
         //console.log(selected_sound_path);
@@ -175,13 +174,11 @@ function Kagaribi() {
                 //console.log(url);
                 const audio = new Audio(url);
                 audio.play();
-
-        });
-
+            });
     }
 
     //火力の調整
-    async function checkFire(){
+    async function checkFire() {
         const docRef = doc(db, "days", "today");
         const docSnap = await getDoc(docRef);
 
@@ -189,52 +186,62 @@ function Kagaribi() {
             const past_ms_date = docSnap.data().created_date;
             const new_now = new Date();
             const now_ms_date = Date.parse(new_now);
-            const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) /10000);
-            if(diff > 9){
+            const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) / 10000);
+            if (diff > 9) {
                 setFireLevel(0);
             }
-            else{
+            else {
                 setFireLevel(9 - diff);
             }
             console.log(fireLevel);
         } else {
-        // docSnap.data() will be undefined in this case
-        console.log("No such document!");
+            // docSnap.data() will be undefined in this case
+            console.log("No such document!");
         }
-
     }
-
-    const handleInputChange = (e) => {
-        setFireLevel(e.target.value);
-    };
 
     return (
         <>
-            <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
-                <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
-            </div>
-            <div className="h-[75vh] w-screen bg-black relative">
-                <div className="h-[22%]"></div>
-                <div className="h-[60%] bg-black">
-                    <CampFire fireLevel={fireLevel} />
-                </div>
-                <div className="h-[18%] bg-black">
-                    <div className="flex justify-center items-center w-full">
-                        <SlArrowUp className="text-7xl text-center text-white" />
+            <div className="relative">
+                <div className={`absolute h-screen w-screen z-20 ${isAllowaudio&&"pointer-events-none"}`}>
+                    <div className="relative h-full w-full" onClick={() => setIsAllowaudio(true)}>
+                        <div>
+                            <img src="./images/welcome.jpg" alt="森"  
+                            className={`absolute inset-0 h-full w-full object-cover ${isAllowaudio&&"welcome-image"}`} 
+                            />
+                        </div>
+                        <div className={`absolute h-full w-full flex items-center justify-center text-center pt-[75%] ${isAllowaudio&&"hidden"}`}>
+                            <p className="z-30 text-white"><span className="kana">tap to start(かっこいい感じのやつ考えて)</span></p>Ï
+                        </div>
                     </div>
-                    <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
-                    <button className="text-white" onClick={selectSound}>再生</button>
-                    <input type="number" value={fireLevel} onChange={handleInputChange}/>
                 </div>
-            </div>
-            <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
-                <div className="relative w-24 h-24">
-                    <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
-                    <button
-                        onClick={onStartOrStop}
-                        className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
-                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
-                    ></button>
+
+                <div className={isAllowaudio?"absolute w-screen h-screen z-10":"hidden"}>
+                    <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
+                        <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
+                    </div>
+                    <div className="h-[75vh] w-screen bg-black relative">
+                        <div className="h-[22%]"></div>
+                        <div className="h-[60%] bg-black">
+                            <CampFire fireLevel={fireLevel} />
+                        </div>
+                        <div className="h-[18%] bg-black">
+                            <div className="flex justify-center items-center w-full">
+                                <SlArrowUp className="text-7xl text-center text-white" />
+                            </div>
+                            <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
+                        </div>
+                    </div>
+                    <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
+                        <div className="relative w-24 h-24">
+                            <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
+                            <button
+                                onClick={onStartOrStop}
+                                className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
+                                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
+                            ></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

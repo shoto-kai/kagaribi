@@ -9,9 +9,7 @@ const FireModelPath = '/models/fire.glb'
 
 const Camp = (props) => {
     const group = useRef()
-
     const gltf = useGLTF(CampModelPath)
-
     return (
         <>
             <group ref={group} dispose={null}>
@@ -25,9 +23,7 @@ const Camp = (props) => {
 
 const Fire = (props) => {
     const group = useRef()
-
     const gltf = useGLTF(FireModelPath)
-
     const { actions, mixer } = useAnimations(gltf.animations, group)
 
     useEffect(() => {
@@ -148,7 +144,7 @@ export default function CampFire({ fireLevel }) {
         <>
             <Canvas
                 className="w-full h-full fixed flex"
-                camera={{ position: [0, 3, 3] }}
+                camera={{ position: [0, 3.5, 3.5] }}
             >
                 <OrbitControls
                     enableRotate={true}      // 回転を有効にする
@@ -166,7 +162,7 @@ export default function CampFire({ fireLevel }) {
                 <FlickeringLight position={[0, fireLightHight + 1, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
                 <FlickeringLight position={[0, fireLightHight + 0.5, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
                 <FlickeringLight position={[0, fireLightHight, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
-                
+
                 <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
                     <meshStandardMaterial color="black" />
                 </Plane>
