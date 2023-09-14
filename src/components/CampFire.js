@@ -131,24 +131,12 @@ export default function CampFire() {
 
     return (
         <>
-            <Canvas className="w-full h-full">
-                <OrbitControls />
+            <Canvas className="w-full h-full fixed flex">
+                {/* <OrbitControls /> */}
                 <directionalLight
                     position={[0, 10, 0]}
                     target-position={[0, 0, 0]}
                 />
-                {/* <pointLight
-                    position={[0, 3, 0]}  // 光の位置
-                    intensity={3}         // 強度 (調整して光の強さを変更できます)
-                />
-                <pointLight
-                    position={[0, 5, 0]}  // 光の位置
-                    intensity={3}         // 強度 (調整して光の強さを変更できます)
-                />
-                <pointLight
-                    position={[0, 1, 0]}  // 光の位置
-                    intensity={10}         // 強度 (調整して光の強さを変更できます)
-                /> */}
 
                 <FlickeringLight position={[0,0,0]}/>
                 <FlickeringLight position={[0,1,0]}/>
