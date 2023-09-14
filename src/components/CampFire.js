@@ -97,7 +97,7 @@ const Fire = (props) => {
     )
 }
 
-const FlickeringLight = ({position}) => {
+const FlickeringLight = ({ position }) => {
     const lightRef = useRef();
 
     useFrame(() => {
@@ -113,9 +113,9 @@ const FlickeringLight = ({position}) => {
     });
 
     return (
-        <pointLight 
+        <pointLight
             ref={lightRef}
-            position={position} 
+            position={position}
             color={0xffaa00}  // 炎のような色
             intensity={1}
             distance={5}  // 照らす距離
@@ -131,24 +131,33 @@ export default function CampFire() {
 
     return (
         <>
-            <Canvas className="w-full h-full fixed flex">
-                {/* <OrbitControls /> */}
+            <Canvas
+                className="w-full h-full fixed flex"
+                camera={{ position: [0, 3, 3] }}
+            >
+                <OrbitControls
+                    enableRotate={true}      // 回転を有効にする
+                    maxPolarAngle={Math.PI/4}   // 上方向の最大角度
+                    minPolarAngle={Math.PI/4}   // 下方向の最小角度 
+                    target={[0, 0, 0]}
+                />
                 <directionalLight
                     position={[0, 10, 0]}
                     target-position={[0, 0, 0]}
                 />
-
-                <FlickeringLight position={[0,0,0]}/>
-                <FlickeringLight position={[0,1,0]}/>
-                <FlickeringLight position={[0,1,0]}/>
-                <FlickeringLight position={[0,3,0]}/>
+                <FlickeringLight position={[0, 0, 0]} />
+                <FlickeringLight position={[0, 1, 0]} />
+                <FlickeringLight position={[0, 1, 0]} />
+                <FlickeringLight position={[0, 3, 0]} />
                 <Suspense >
-                    <Camp position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1} />
-                    <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={100}/>
-                    <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={200}/>
-                    <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={300}/>
-                    <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={400}/>
-                    <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={500}/>
+                    <group rotation={[0, 0, 0]}>
+                        <Camp position={[0, 0, 0]} rotation={[0, 1, 0]} scale={1} />
+                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={100} />
+                        <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={200} />
+                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={300} />
+                        <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={400} />
+                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={500} />
+                    </group>
                 </Suspense>
             </Canvas>
         </>

@@ -7,6 +7,7 @@ import { getStorage, ref, uploadBytes } from "firebase/storage";
 import axios from "axios";
 
 import CampFire from '../components/CampFire'
+import {SlArrowUp} from "react-icons/sl"
 
 function Kagaribi() {
     //録音機能
@@ -134,20 +135,28 @@ function Kagaribi() {
 
     return (
         <>
-            <div id="header" className='h-[10vh] flex justify-center items-center bg-blue-300'>
-                <p className="text-center">かがり火</p>
+            <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
+                <p className="text-center text-white">かがり火</p>
             </div>
-            <div className="h-[75vh] w-screen bg-black">
-                <CampFire />
-                <div>
-                    <button className="text-white" onClick={saveWavFile}>送信</button>
+            <div className="h-[75vh] w-screen bg-black relative">
+                <div className="h-[22%]"></div>
+                <div className="h-[60%] bg-black">
+                    <CampFire />
+                </div>
+                <div className="h-[18%] bg-black">
+                    <div className="flex justify-center items-center w-full">
+                        <SlArrowUp className="text-7xl text-center text-white"/>
+                    </div>
+                    <button className="text-white" onClick={saveWavFile}>音をくべる</button>
                 </div>
             </div>
-            <div className=" h-[15vh] flex justify-center items-center bg-red-400 text-white ">
-                <div>
-                    <button onClick={onStartOrStop}>
-                        {isRecording ? "録音中" : "録音する"}
-                    </button>
+            <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
+                <div className="relative w-24 h-24">
+                    <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
+                    <button 
+                        onClick={onStartOrStop} 
+                        className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out ${isRecording ? "inset-8 rounded-md":"inset-4 rounded-full"}`}
+                    ></button>
                 </div>
             </div>
         </>
