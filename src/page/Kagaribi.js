@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
 import firebase from "firebase/app";
 import { storage } from "../firebase";
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL} from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 
 import axios from "axios";
 
 import CampFire from '../components/CampFire'
-import {SlArrowUp} from "react-icons/sl"
+import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
     //録音機能
@@ -36,7 +36,7 @@ function Kagaribi() {
         console.log(mediaBlobUrl)
         try {
             const response = await axios.get(mediaBlobUrl, {
-            responseType: 'blob' // レスポンスのデータ型をblobに指定
+                responseType: 'blob' // レスポンスのデータ型をblobに指定
             });
 
             // Blobデータを取得し、stateにセットします。
@@ -98,29 +98,29 @@ function Kagaribi() {
 
     }
 
-    
+
     // 再描画の影響を受けない不変なオブジェクト
     const audioContext = useRef(null);
     // 内部状態
     const [audioBuffer, setAudioBuffer] = useState(null); // 追加
 
     // 初期化
-    useEffect(()=>{
+    useEffect(() => {
         audioContext.current = new AudioContext();
-    },[])
+    }, [])
     // イベントコールバック
-    const handleChangeFile = async(event) => {
+    const handleChangeFile = async (event) => {
         const _file = event.target.files[0];
         const _audioBuffer = await audioContext.current.decodeAudioData( // 追加
-        await _file.arrayBuffer()
+            await _file.arrayBuffer()
         );
         setAudioBuffer(_audioBuffer); // 追加
     };
 
-    const handleClickPlay = () => { 
+    const handleClickPlay = () => {
         // 自動再生ブロックにより停止されたオーディオを再開させる
         if (audioContext.current.state === "suspended") {
-          audioContext.current.resume();
+            audioContext.current.resume();
         }
         // ソースノード生成 ＋ 音声を設定
         const sourceNode = audioContext.current.createBufferSource();
@@ -129,7 +129,7 @@ function Kagaribi() {
         sourceNode.connect(audioContext.current.destination);
         // 再生発火
         sourceNode.start();
-        };
+    };
 
     return (
         <>
@@ -143,7 +143,7 @@ function Kagaribi() {
                 </div>
                 <div className="h-[18%] bg-black">
                     <div className="flex justify-center items-center w-full">
-                        <SlArrowUp className="text-7xl text-center text-white"/>
+                        <SlArrowUp className="text-7xl text-center text-white" />
                     </div>
                     <button className="text-white" onClick={saveWavFile}>音をくべる</button>
                 </div>
@@ -151,10 +151,10 @@ function Kagaribi() {
             <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
                 <div className="relative w-24 h-24">
                     <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
-                    <button 
-                        onClick={onStartOrStop} 
+                    <button
+                        onClick={onStartOrStop}
                         className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
-                        ${isRecording ? "inset-8 rounded-md":"inset-4 rounded-full"}`}
+                        ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
                     ></button>
                 </div>
             </div>
