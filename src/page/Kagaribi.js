@@ -15,7 +15,7 @@ function Kagaribi() {
         getDownloadURL(ref(storage, 'fire/takibi_new.wav'))
             .then((url) => {
                 const takibi_wav = new Audio(url);
-                if (Math.random() > 0.9 && fireLevel > 0){
+                if (Math.random() > 0.7 && fireLevel > 0){
 
                 takibi_wav.play();
                 console.log("ph no");
@@ -53,11 +53,11 @@ function Kagaribi() {
             
           //console.log(fireLevel);
           checkFire();
-          selectSound();
-          patipati();
-            if (isAllowaudio) {
-                selectSound()
-            }
+          //selectSound();
+        if (isAllowaudio) {
+            selectSound()
+            patipati();
+        }
 
         }
 
@@ -70,7 +70,7 @@ function Kagaribi() {
     }, [fireLevel]);
 
     useEffect(() => {
-          checkFire();
+          //checkFire();
           patipati();
          
     })    
