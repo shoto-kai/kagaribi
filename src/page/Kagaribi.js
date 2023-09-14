@@ -181,50 +181,48 @@ function Kagaribi() {
 
     return (
         <>
-            {isAllowaudio
-                ? (
-                    <>
-                        <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
-                            <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
+            <div className="relative">
+                <div className={`absolute h-screen w-screen z-20 ${isAllowaudio&&"pointer-events-none"}`}>
+                    <div className="relative h-full w-full" onClick={() => setIsAllowaudio(true)}>
+                        <div>
+                            <img src="./images/welcome.jpg" alt="森"  
+                            className={`absolute inset-0 h-full w-full object-cover ${isAllowaudio&&"welcome-image"}`} 
+                            />
                         </div>
-                        <div className="h-[75vh] w-screen bg-black relative">
-                            <div className="h-[22%]"></div>
-                            <div className="h-[60%] bg-black">
-                                <CampFire fireLevel={fireLevel} />
-                            </div>
-                            <div className="h-[18%] bg-black">
-                                <div className="flex justify-center items-center w-full">
-                                    <SlArrowUp className="text-7xl text-center text-white" />
-                                </div>
-                                <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
-                            </div>
+                        <div className={`absolute h-full w-full flex items-center justify-center text-center pt-[75%] ${isAllowaudio&&"hidden"}`}>
+                            <p className="z-30 text-white"><span className="kana">かっこいい感じのやつ考えて</span></p>Ï
                         </div>
-                        <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
-                            <div className="relative w-24 h-24">
-                                <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
-                                <button
-                                    onClick={onStartOrStop}
-                                    className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
-                                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
-                                ></button>
-                            </div>
-                        </div>
-                    </>
-                )
-                : (
-                    <>
-                        <div className="relative h-screen w-screen overflow-hidden bg-black pr-16" onClick={() => setIsAllowaudio(true)}>
-                            <div>
-                                <img src="./images/welcome.png" alt="森" className="absolute inset-0 h-full w-full object-cover opacity-50" />
-                            </div>
-                            <div className="absolute h-full w-full flex items-center justify-center text-center pt-[75%]">
-                                <p className="z-10 text-white"><span className="kana">かっこいい感じのやつ考えて</span></p>Ï
-                            </div>
-                        </div>
-                    </>
-                )
-            }
+                    </div>
+                </div>
 
+                <div className="absolute w-screen h-screen z-10">
+                    <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
+                        <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
+                    </div>
+                    <div className="h-[75vh] w-screen bg-black relative">
+                        <div className="h-[22%]"></div>
+                        <div className="h-[60%] bg-black">
+                            <CampFire fireLevel={fireLevel} />
+                        </div>
+                        <div className="h-[18%] bg-black">
+                            <div className="flex justify-center items-center w-full">
+                                <SlArrowUp className="text-7xl text-center text-white" />
+                            </div>
+                            <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
+                        </div>
+                    </div>
+                    <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
+                        <div className="relative w-24 h-24">
+                            <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
+                            <button
+                                onClick={onStartOrStop}
+                                className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
+                                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
