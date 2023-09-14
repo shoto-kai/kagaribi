@@ -190,7 +190,7 @@ function Kagaribi() {
                             />
                         </div>
                         <div className={`absolute h-full w-full flex items-center justify-center text-center pt-[75%] ${isAllowaudio&&"hidden"}`}>
-                            <p className="z-30 text-white"><span className="kana">かっこいい感じのやつ考えて</span></p>Ï
+                            <p className="z-30 text-white"><span className="kana">tap to start(かっこいい感じのやつ考えて)</span></p>Ï
                         </div>
                     </div>
                 </div>
