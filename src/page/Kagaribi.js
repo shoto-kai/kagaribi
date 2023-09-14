@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
 import firebase from "firebase/app";
 import { storage } from "../firebase";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, getDownloadURL} from "firebase/storage";
 
 import axios from "axios";
 
@@ -35,8 +35,13 @@ function Kagaribi() {
     const getBlobFromBlobURL = async () => {
         console.log(mediaBlobUrl)
         try {
+<<<<<<< HEAD
             var response = await axios.get(mediaBlobUrl, {
                 responseType: 'blob' // レスポンスのデータ型をblobに指定
+=======
+            const response = await axios.get(mediaBlobUrl, {
+            responseType: 'blob' // レスポンスのデータ型をblobに指定
+>>>>>>> 54491600407ce5ed66b64a589cb53c74505a46b6
             });
 
             // Blobデータを取得し、stateにセットします。
@@ -80,17 +85,33 @@ function Kagaribi() {
     */
 
     //以下は保存処理
+<<<<<<< HEAD
     const saveWavFile = async () => {
         var myblob = await getBlobFromBlobURL();
         var mywav = await getWavfromBlob(myblob);
+=======
+    const saveWavFile = async() => {
+        const myblob =  await getBlobFromBlobURL();
+        const mywav = await getWavfromBlob(myblob);
+>>>>>>> 54491600407ce5ed66b64a589cb53c74505a46b6
         const myaudio = await new Audio(URL.createObjectURL(mywav));
+        myaudio.name = "happy" + Math.random().toString(32).substring(2);
+
         const storageRef = ref(storage, `audios/${myaudio.name}`);
+<<<<<<< HEAD
         var myblob = await getBlobFromBlobURL();
         var mywav = await getWavfromBlob(myblob);
+=======
+>>>>>>> 54491600407ce5ed66b64a589cb53c74505a46b6
         console.log(mywav);
         const audio = await new Audio(URL.createObjectURL(mywav));
         await audio.play();
-        await uploadBytes(storageRef, myaudio)
+
+        const metadata = {
+            contentType: 'audio/wav',
+        };
+
+        await uploadBytes(storageRef, mywav)
             .then((snapshot) => {
                 console.log("アップロードに成功しました");
             })
@@ -100,6 +121,7 @@ function Kagaribi() {
 
     }
 
+<<<<<<< HEAD
 
     // 再描画の影響を受けない不変なオブジェクト
     const audioContext = useRef(null);
@@ -132,6 +154,42 @@ function Kagaribi() {
         // 再生発火
         sourceNode.start();
     };
+=======
+    async function getAllWavPath(){
+        const listRef = ref(storage, `audios`);
+        const path_list = [];
+        await listAll(listRef)
+        .then((res) => {
+            res.prefixes.forEach((folderRef) => {
+            // All the prefixes under listRef.
+            // You may call listAll() recursively on them.
+            });
+            res.items.forEach(async (itemRef) => {
+                //console.log(itemRef);
+                await path_list.push(itemRef._location.path_);
+
+            });
+        }).catch((error) => {
+            // Uh-oh, an error occurred!
+        });
+        return path_list;
+    }
+
+    async function selectSound(){
+        const firestorage = storage;
+        const path_list = await getAllWavPath();
+        const selected_sound_path = path_list[Math.floor( Math.random() * path_list.length)];
+        console.log(selected_sound_path);
+        getDownloadURL(ref(storage, selected_sound_path))
+        .then((url) => {
+            console.log(url);
+            const audio = new Audio(url);
+            audio.play();
+
+        });
+        
+    }
+>>>>>>> 54491600407ce5ed66b64a589cb53c74505a46b6
 
     return (
         <>
@@ -150,6 +208,7 @@ function Kagaribi() {
                     <button className="text-white" onClick={saveWavFile}>音をくべる</button>
                 </div>
             </div>
+<<<<<<< HEAD
             <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
                 <div className="relative w-24 h-24">
                     <div className="absolute inset-3 border-4 border-white rounded-full bg-transparent"></div>
@@ -158,6 +217,17 @@ function Kagaribi() {
                         className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out ${isRecording ? "inset-8 rounded-md":"inset-4 rounded-full"}`}
                     ></button>
                 </div>
+=======
+
+            <div>
+                <button onClick={selectSound}>再生</button>
+            </div>
+
+            <div className="bg-red-400">
+                <p className="text-blue-400">test</p>
+                <p>test</p>
+                <Test />
+>>>>>>> 54491600407ce5ed66b64a589cb53c74505a46b6
             </div>
         </>
     );
