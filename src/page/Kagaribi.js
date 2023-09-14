@@ -195,7 +195,7 @@ function Kagaribi() {
                     </div>
                 </div>
 
-                <div className="absolute w-screen h-screen z-10">
+                <div className={isAllowaudio?"absolute w-screen h-screen z-10":"hidden"}>
                     <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
                         <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
                     </div>

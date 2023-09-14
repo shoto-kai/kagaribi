@@ -26,14 +26,12 @@
 
 .welcome-image {
     animation: anime 1s 0s;
-    z-index: 0;
     opacity: 0;
 }
 
 @keyframes anime {
     0% {
         opacity: 1;
-        z-index: 10;
     }
 
     50% {
@@ -43,29 +41,10 @@
     60% {
         opacity: 0;
         transform: scale(1.2);
-        z-index: 0;
     }
 
     100% {
         opacity: 0;
         transform: scale(1.2);
-        z-index: 0;
     }
 }
-
-/* @keyframes hidden-anime {
-    0% {
-        display: block;
-        z-index: 10;
-    }
-
-    90% {
-        display: block;
-        z-index: 10;
-    }
-
-    100% {
-        display: none;
-        z-index: 0;
-    }
-} */
