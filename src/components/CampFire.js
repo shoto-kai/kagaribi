@@ -102,15 +102,17 @@ const FlickeringLight = ({ position, intensity, distance, decay }) => {
     const lightRef = useRef();
 
     useFrame(() => {
-        // ライトの強度をランダムに変動させる
-        const intensityVariation = 0.1 * (Math.random() - 0.5);  // -0.05 から 0.05 の範囲で変動
-        lightRef.current.intensity = Math.max(intensity / 2, lightRef.current.intensity + intensityVariation);  // 最小値を 0.5 に設定
+        if (intensity !== 0) {
+            // ライトの強度をランダムに変動させる
+            const intensityVariation = 0.1 * (Math.random() - 0.5);  // -0.05 から 0.05 の範囲で変動
+            lightRef.current.intensity = Math.max(intensity / 2, lightRef.current.intensity + intensityVariation);  // 最小値を 0.5 に設定
 
-        // ライトの位置をランダムに変動させる
-        const positionVariation = 0.05;
-        lightRef.current.position.x += positionVariation * (Math.random() - 0.5);
-        lightRef.current.position.y += positionVariation * (Math.random() - 0.5);
-        lightRef.current.position.z += positionVariation * (Math.random() - 0.5);
+            // ライトの位置をランダムに変動させる
+            const positionVariation = 0.05;
+            lightRef.current.position.x += positionVariation * (Math.random() - 0.5);
+            lightRef.current.position.y += positionVariation * (Math.random() - 0.5);
+            lightRef.current.position.z += positionVariation * (Math.random() - 0.5);
+        }
     });
 
     return (
@@ -162,6 +164,9 @@ export default function CampFire({ fireLevel }) {
                 <FlickeringLight position={[0, fireLightHight + 3, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
                 <FlickeringLight position={[0, fireLightHight + 2, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
                 <FlickeringLight position={[0, fireLightHight + 1, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
+                <FlickeringLight position={[0, fireLightHight + 0.5, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
+                <FlickeringLight position={[0, fireLightHight, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity} />
+                
                 <Plane args={[10, 10]} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
                     <meshStandardMaterial color="black" />
                 </Plane>
