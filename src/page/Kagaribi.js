@@ -46,8 +46,6 @@ function Kagaribi() {
             console.error('Blobデータの取得エラー:', error);
             return null;
         }
-
-
     }
 
     const getWavfromBlob = (blobData) => {
@@ -81,14 +79,21 @@ function Kagaribi() {
 
     //以下は保存処理
     const saveWavFile = async () => {
-        var myblob = await getBlobFromBlobURL();
-        var mywav = await getWavfromBlob(myblob);
+        const myblob = await getBlobFromBlobURL();
+        const mywav = await getWavfromBlob(myblob);
         const myaudio = await new Audio(URL.createObjectURL(mywav));
+        myaudio.name = "happy" + Math.random().toString(32).substring(2);
+
         const storageRef = ref(storage, `audios/${myaudio.name}`);
         console.log(mywav);
         const audio = await new Audio(URL.createObjectURL(mywav));
         await audio.play();
-        await uploadBytes(storageRef, myaudio)
+
+        const metadata = {
+            contentType: 'audio/wav',
+        };
+
+        await uploadBytes(storageRef, mywav)
             .then((snapshot) => {
                 console.log("アップロードに成功しました");
             })
@@ -98,38 +103,40 @@ function Kagaribi() {
 
     }
 
+    async function getAllWavPath() {
+        const listRef = ref(storage, `audios`);
+        const path_list = [];
+        await listAll(listRef)
+            .then((res) => {
+                res.prefixes.forEach((folderRef) => {
+                    // All the prefixes under listRef.
+                    // You may call listAll() recursively on them.
+                });
+                res.items.forEach(async (itemRef) => {
+                    //console.log(itemRef);
+                    await path_list.push(itemRef._location.path_);
 
-    // 再描画の影響を受けない不変なオブジェクト
-    const audioContext = useRef(null);
-    // 内部状態
-    const [audioBuffer, setAudioBuffer] = useState(null); // 追加
+                });
+            }).catch((error) => {
+                // Uh-oh, an error occurred!
+            });
+        return path_list;
+    }
 
-    // 初期化
-    useEffect(() => {
-        audioContext.current = new AudioContext();
-    }, [])
-    // イベントコールバック
-    const handleChangeFile = async (event) => {
-        const _file = event.target.files[0];
-        const _audioBuffer = await audioContext.current.decodeAudioData( // 追加
-            await _file.arrayBuffer()
-        );
-        setAudioBuffer(_audioBuffer); // 追加
-    };
+    async function selectSound() {
+        const firestorage = storage;
+        const path_list = await getAllWavPath();
+        const selected_sound_path = path_list[Math.floor(Math.random() * path_list.length)];
+        console.log(selected_sound_path);
+        getDownloadURL(ref(storage, selected_sound_path))
+            .then((url) => {
+                console.log(url);
+                const audio = new Audio(url);
+                audio.play();
 
-    const handleClickPlay = () => {
-        // 自動再生ブロックにより停止されたオーディオを再開させる
-        if (audioContext.current.state === "suspended") {
-            audioContext.current.resume();
-        }
-        // ソースノード生成 ＋ 音声を設定
-        const sourceNode = audioContext.current.createBufferSource();
-        //sourceNode.buffer = audioBuffer;
-        // 出力先に接続
-        sourceNode.connect(audioContext.current.destination);
-        // 再生発火
-        sourceNode.start();
-    };
+            });
+
+    }
 
     return (
         <>
@@ -146,6 +153,8 @@ function Kagaribi() {
                         <SlArrowUp className="text-7xl text-center text-white" />
                     </div>
                     <button className="text-white" onClick={saveWavFile}>音をくべる</button>
+                    <button className="text-white" onClick={selectSound}>再生</button>
+
                 </div>
             </div>
             <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
@@ -154,7 +163,7 @@ function Kagaribi() {
                     <button
                         onClick={onStartOrStop}
                         className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
-                        ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
+                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
                     ></button>
                 </div>
             </div>
@@ -163,4 +172,3 @@ function Kagaribi() {
 }
 
 export default Kagaribi;
-
