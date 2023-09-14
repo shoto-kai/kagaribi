@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
 import firebase from "firebase/app";
-import { storage } from "../firebase";
+import { storage, db } from "../firebase";
 import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-
+import { collection, setDoc, getDoc, doc } from "firebase/firestore"; 
 import axios from "axios";
 
 import CampFire from '../components/CampFire'
@@ -11,14 +11,10 @@ import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
     const [fireLevel, setFireLevel] = useState(0) // 0~9が入る
-
-
-
+   
     //録音機能
     const renderFlagRef = useRef(false);
     const [isRecording, setIsRecording] = useState(false);
-    //const [blobData, setBlobData] = useState(null);
-    //const [wavFile, setWavFile] = useState(null);
     const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder(
         {
             audio: true,
@@ -53,7 +49,6 @@ function Kagaribi() {
     }
 
     const getWavfromBlob = (blobData) => {
-        //setWavFile(new File([blobData], 'audio.wav', { type: 'audio/wav' }));
         var mywav = new File([blobData], 'audio.wav', { type: 'audio/wav' });
         return mywav;
     };
@@ -70,19 +65,10 @@ function Kagaribi() {
         }
     };
 
-    //以下は再生処理
-    /*
-    const playWavFile = async() => {
-        var listenblob =  await getBlobFromBlobURL();
-        var listenwav = await getWavfromBlob(listenblob);
-        console.log(listenblob);
-        const audio = await new Audio(URL.createObjectURL(listenwav));
-        await audio.play();
-    }
-    */
-
     //以下は保存処理
     const saveWavFile = async () => {
+        const now = new Date();
+        const nowdate = Date.parse(now);
         const myblob = await getBlobFromBlobURL();
         const mywav = await getWavfromBlob(myblob);
         const myaudio = await new Audio(URL.createObjectURL(mywav));
@@ -99,15 +85,27 @@ function Kagaribi() {
 
         await uploadBytes(storageRef, mywav)
             .then((snapshot) => {
-                console.log("アップロードに成功しました");
+                console.log("音声アップロードに成功しました");
             })
             .catch((error) => {
-                console.log("アップロードに失敗しました");
+                console.log("音声アップロードに失敗しました");
             });
+    
+        
+        try {
+            const docRef = await setDoc(doc(collection(db, "days"), "today"), {
+              created_date:nowdate
+            });
+            console.log("hi");
+          } catch (e) {
+            console.error("oh");
+          }
+
 
     }
 
     async function getAllWavPath() {
+        
         const listRef = ref(storage, `audios`);
         const path_list = [];
         await listAll(listRef)
@@ -117,28 +115,52 @@ function Kagaribi() {
                     // You may call listAll() recursively on them.
                 });
                 res.items.forEach(async (itemRef) => {
-                    //console.log(itemRef);
                     await path_list.push(itemRef._location.path_);
 
                 });
             }).catch((error) => {
-                // Uh-oh, an error occurred!
+                console.log("Uh-oh, an error occurred!");
             });
         return path_list;
     }
 
     async function selectSound() {
+        checkFire();
         const firestorage = storage;
         const path_list = await getAllWavPath();
         const selected_sound_path = path_list[Math.floor(Math.random() * path_list.length)];
         console.log(selected_sound_path);
         getDownloadURL(ref(storage, selected_sound_path))
             .then((url) => {
-                console.log(url);
+                //console.log(url);
                 const audio = new Audio(url);
                 audio.play();
 
-            });
+        });
+
+        //火力の調整
+        async function checkFire(){
+            const docRef = doc(db, "days", "today");
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const past_ms_date = docSnap.data().created_date;
+                const new_now = new Date();
+                const now_ms_date = Date.parse(new_now);
+                const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) /1000);
+                if(diff > 9){
+                    setFireLevel(0);
+                }
+                else{
+                    setFireLevel(9 - diff);
+                }
+                console.log(fireLevel);
+            } else {
+            // docSnap.data() will be undefined in this case
+            console.log("No such document!");
+            }
+
+        }
 
     }
 
