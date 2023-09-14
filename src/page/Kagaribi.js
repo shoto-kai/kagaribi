@@ -164,23 +164,27 @@ function Kagaribi() {
 
     }
 
+    const handleInputChange = (e) => {
+        setFireLevel(e.target.value);
+    };
+
     return (
         <>
             <div id="header" className='h-[10vh] flex justify-center items-center bg-black border-b border-gray-700'>
-                <p className="text-center text-white">かがり火</p>
+                <p className="text-center text-white "><span className="kana">かがり</span><span className="kanji">火</span></p>
             </div>
             <div className="h-[75vh] w-screen bg-black relative">
                 <div className="h-[22%]"></div>
                 <div className="h-[60%] bg-black">
-                    <CampFire fireLevel={fireLevel}/>
+                    <CampFire fireLevel={fireLevel} />
                 </div>
                 <div className="h-[18%] bg-black">
                     <div className="flex justify-center items-center w-full">
                         <SlArrowUp className="text-7xl text-center text-white" />
                     </div>
-                    <button className="text-white" onClick={saveWavFile}>音をくべる</button>
+                    <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
                     <button className="text-white" onClick={selectSound}>再生</button>
-
+                    <input type="number" value={fireLevel} onChange={handleInputChange}/>
                 </div>
             </div>
             <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
