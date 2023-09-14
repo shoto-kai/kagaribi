@@ -11,7 +11,21 @@ import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
     const [fireLevel, setFireLevel] = useState(null); // 0~9が入る
-   
+
+    const patipati = () => {
+        getDownloadURL(ref(storage, 'fire/takibi_new.wav'))
+            .then((url) => {
+                const takibi_wav = new Audio(url);
+                if (Math.random() > 0.9 && fireLevel > 0){
+
+                takibi_wav.play();
+                console.log("ph no");
+                };
+        });
+
+
+    };
+
     //録音機能
     const renderFlagRef = useRef(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -38,8 +52,8 @@ function Kagaribi() {
         function callEverySixMinutes() {
           //console.log(fireLevel);
           checkFire();
-          selectSound()
-          // 任意の関数をここに書く
+          selectSound();
+          patipati();
         }
     
         const intervalId = setInterval(callEverySixMinutes, 10000);
@@ -50,10 +64,11 @@ function Kagaribi() {
         };
       }, [fireLevel]);
 
-      useEffect(() => {
+    useEffect(() => {
           checkFire();
+          patipati();
          
-    })
+    })    
         
 
     const getBlobFromBlobURL = async () => {
