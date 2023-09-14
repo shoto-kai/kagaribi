@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactMediaRecorder } from "react-media-recorder";
-import firebase from "firebase/app";
 import { storage, db } from "../firebase";
-import { getStorage, ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { collection, setDoc, getDoc, doc } from "firebase/firestore"; 
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { collection, setDoc, getDoc, doc } from "firebase/firestore";
 import axios from "axios";
 
 import CampFire from '../components/CampFire'
@@ -11,7 +10,7 @@ import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
     const [fireLevel, setFireLevel] = useState(null); // 0~9が入る
-   
+
     //録音機能
     const renderFlagRef = useRef(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -36,25 +35,23 @@ function Kagaribi() {
     useEffect(() => {
         // この関数が6分ごとに呼び出される
         function callEverySixMinutes() {
-          //console.log(fireLevel);
-          checkFire();
-          selectSound()
-          // 任意の関数をここに書く
+            //console.log(fireLevel);
+            checkFire();
+            selectSound()
+            // 任意の関数をここに書く
         }
-    
+
         const intervalId = setInterval(callEverySixMinutes, 10000);
-    
+
         // コンポーネントがアンマウントされたときに、タイマーをクリアする
         return () => {
-          clearInterval(intervalId);
+            clearInterval(intervalId);
         };
-      }, [fireLevel]);
+    }, [fireLevel]);
 
-      useEffect(() => {
-          checkFire();
-         
+    useEffect(() => {
+        checkFire();
     })
-        
 
     const getBlobFromBlobURL = async () => {
         console.log(mediaBlobUrl)
@@ -114,23 +111,19 @@ function Kagaribi() {
             .catch((error) => {
                 console.log("音声アップロードに失敗しました");
             });
-    
-        
+
         try {
             const docRef = await setDoc(doc(collection(db, "days"), "today"), {
-              created_date:nowdate
+                created_date: nowdate
             });
             console.log("hi");
-          } catch (e) {
+        } catch (e) {
             console.error("oh");
-          }
+        }
         setFireLevel(9);
-
-
     }
 
     async function getAllWavPath() {
-        
         const listRef = ref(storage, `audios`);
         const path_list = [];
         await listAll(listRef)
@@ -141,7 +134,6 @@ function Kagaribi() {
                 });
                 res.items.forEach(async (itemRef) => {
                     await path_list.push(itemRef._location.path_);
-
                 });
             }).catch((error) => {
                 console.log("Uh-oh, an error occurred!");
@@ -151,7 +143,6 @@ function Kagaribi() {
 
     async function selectSound() {
         checkFire();
-        const firestorage = storage;
         const path_list = await getAllWavPath();
         const selected_sound_path = path_list[Math.floor(Math.random() * path_list.length)];
         //console.log(selected_sound_path);
@@ -160,13 +151,11 @@ function Kagaribi() {
                 //console.log(url);
                 const audio = new Audio(url);
                 audio.play();
-
-        });
-
+            });
     }
 
     //火力の調整
-    async function checkFire(){
+    async function checkFire() {
         const docRef = doc(db, "days", "today");
         const docSnap = await getDoc(docRef);
 
@@ -174,19 +163,18 @@ function Kagaribi() {
             const past_ms_date = docSnap.data().created_date;
             const new_now = new Date();
             const now_ms_date = Date.parse(new_now);
-            const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) /10000);
-            if(diff > 9){
+            const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) / 10000);
+            if (diff > 9) {
                 setFireLevel(0);
             }
-            else{
+            else {
                 setFireLevel(9 - diff);
             }
             console.log(fireLevel);
         } else {
-        // docSnap.data() will be undefined in this case
-        console.log("No such document!");
+            // docSnap.data() will be undefined in this case
+            console.log("No such document!");
         }
-
     }
 
     const handleInputChange = (e) => {
@@ -209,7 +197,7 @@ function Kagaribi() {
                     </div>
                     <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
                     <button className="text-white" onClick={selectSound}>再生</button>
-                    <input type="number" value={fireLevel} onChange={handleInputChange}/>
+                    <input type="number" value={fireLevel} onChange={handleInputChange} />
                 </div>
             </div>
             <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
