@@ -10,6 +10,10 @@ import CampFire from '../components/CampFire'
 import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
+    const [fireLevel, setFireLevel] = useState(0) // 0~9が入る
+
+
+
     //録音機能
     const renderFlagRef = useRef(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -146,7 +150,7 @@ function Kagaribi() {
             <div className="h-[75vh] w-screen bg-black relative">
                 <div className="h-[22%]"></div>
                 <div className="h-[60%] bg-black">
-                    <CampFire />
+                    <CampFire fireLevel={fireLevel}/>
                 </div>
                 <div className="h-[18%] bg-black">
                     <div className="flex justify-center items-center w-full">
