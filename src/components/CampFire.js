@@ -144,7 +144,7 @@ export default function CampFire({ fireLevel }) {
         <>
             <Canvas
                 className="w-full h-full fixed flex"
-                camera={{ position: [0, 3, 3] }}
+                camera={{ position: [0, 3.5, 3.5] }}
             >
                 <OrbitControls
                     enableRotate={true}      // 回転を有効にする

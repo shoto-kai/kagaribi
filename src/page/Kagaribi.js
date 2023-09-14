@@ -41,7 +41,6 @@ function Kagaribi() {
             if (isAllowaudio) {
                 selectSound()
             }
-            // 任意の関数をここに書く
         }
 
         const intervalId = setInterval(callEverySixMinutes, 10000);
@@ -206,7 +205,7 @@ function Kagaribi() {
                                 <button
                                     onClick={onStartOrStop}
                                     className={`absolute bg-red-500 focus:outline-none transition-all duration-300 ease-in-out
-                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
+                                    ${isRecording ? "inset-8 rounded-md" : "inset-4 rounded-full"}`}
                                 ></button>
                             </div>
                         </div>
@@ -214,8 +213,10 @@ function Kagaribi() {
                 )
                 : (
                     <>
-                        <div className="relative h-screen w-screen overflow-hidden" onClick={() => setIsAllowaudio(true)}>
-                            <img src="./images/icon.png" alt="森" className="absolute inset-0 h-full w-full object-cover" />
+                        <div className="relative h-screen w-screen overflow-hidden bg-black pr-16" onClick={() => setIsAllowaudio(true)}>
+                            <div>
+                                <img src="./images/welcome.png" alt="森" className="absolute inset-0 h-full w-full object-cover opacity-50" />
+                            </div>
                             <div className="absolute h-full w-full flex items-center justify-center text-center pt-[75%]">
                                 <p className="z-10 text-white"><span className="kana">かっこいい感じのやつ考えて</span></p>Ï
                             </div>
