@@ -1,3 +1,25 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+@font-face {
+    font-family: 'kanji';
+    /* 任意のフォントファミリー名を設定 */
+    src: url('./assets/fonts/ipam.ttc');
+    /* TTCファイルへのパスを指定 */
+}
+
+@font-face {
+    font-family: 'kana';
+    /* 使用したいフォント名を指定 */
+    src: url('./assets/fonts/HannariMincho-Regular.otf') format('opentype');
+    /* 保存したフォントファイルのパスを指定 */
+}
+
+.kanji {
+    font-family: kanji;
+}
+
+.kana {
+    font-family: kana;
+}
