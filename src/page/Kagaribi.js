@@ -10,7 +10,7 @@ import CampFire from '../components/CampFire'
 import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
-    const [fireLevel, setFireLevel] = useState(0) // 0~9が入る
+    const [fireLevel, setFireLevel] = useState(null); // 0~9が入る
    
     //録音機能
     const renderFlagRef = useRef(false);
@@ -31,6 +31,30 @@ function Kagaribi() {
             renderFlagRef.current = true;
         }
     }, [mediaBlobUrl]);
+
+    //たきび
+    useEffect(() => {
+        // この関数が6分ごとに呼び出される
+        function callEverySixMinutes() {
+          //console.log(fireLevel);
+          checkFire();
+          selectSound()
+          // 任意の関数をここに書く
+        }
+    
+        const intervalId = setInterval(callEverySixMinutes, 10000);
+    
+        // コンポーネントがアンマウントされたときに、タイマーをクリアする
+        return () => {
+          clearInterval(intervalId);
+        };
+      }, [fireLevel]);
+
+      useEffect(() => {
+          checkFire();
+         
+    })
+        
 
     const getBlobFromBlobURL = async () => {
         console.log(mediaBlobUrl)
@@ -100,6 +124,7 @@ function Kagaribi() {
           } catch (e) {
             console.error("oh");
           }
+        setFireLevel(9);
 
 
     }
@@ -129,7 +154,7 @@ function Kagaribi() {
         const firestorage = storage;
         const path_list = await getAllWavPath();
         const selected_sound_path = path_list[Math.floor(Math.random() * path_list.length)];
-        console.log(selected_sound_path);
+        //console.log(selected_sound_path);
         getDownloadURL(ref(storage, selected_sound_path))
             .then((url) => {
                 //console.log(url);
@@ -138,28 +163,28 @@ function Kagaribi() {
 
         });
 
-        //火力の調整
-        async function checkFire(){
-            const docRef = doc(db, "days", "today");
-            const docSnap = await getDoc(docRef);
+    }
 
-            if (docSnap.exists()) {
-                const past_ms_date = docSnap.data().created_date;
-                const new_now = new Date();
-                const now_ms_date = Date.parse(new_now);
-                const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) /1000);
-                if(diff > 9){
-                    setFireLevel(0);
-                }
-                else{
-                    setFireLevel(9 - diff);
-                }
-                console.log(fireLevel);
-            } else {
-            // docSnap.data() will be undefined in this case
-            console.log("No such document!");
+    //火力の調整
+    async function checkFire(){
+        const docRef = doc(db, "days", "today");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const past_ms_date = docSnap.data().created_date;
+            const new_now = new Date();
+            const now_ms_date = Date.parse(new_now);
+            const diff = Math.floor(Math.abs(now_ms_date - past_ms_date) /10000);
+            if(diff > 9){
+                setFireLevel(0);
             }
-
+            else{
+                setFireLevel(9 - diff);
+            }
+            console.log(fireLevel);
+        } else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
         }
 
     }
