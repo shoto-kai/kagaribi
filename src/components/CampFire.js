@@ -4,7 +4,7 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 import { OrbitControls } from '@react-three/drei'
 
 const CampModelPath = '/models/camp.glb'
-const FireModelPath = '/models/fire1.glb'
+const FireModelPath = '/models/fire.glb'
 
 const Camp = (props) => {
     const group = useRef()
