@@ -1,15 +1,14 @@
 import React from 'react';
 
-import Test from '../components/test'
+import CampFire from '../components/CampFire'
 
 function Kagaribi() {
     return (
-        <div className="bg-red-400">
-            <p className="text-blue-400">test</p>
-            <p>test</p>
-            <Test />
+        <div className="h-screen w-screen bg-black">
+            <CampFire />
         </div>
     );
 }
 
 export default Kagaribi;
+
