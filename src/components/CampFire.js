@@ -97,13 +97,13 @@ const Fire = (props) => {
     )
 }
 
-const FlickeringLight = ({ position }) => {
+const FlickeringLight = ({ position, intensity, distance, decay }) => {
     const lightRef = useRef();
 
     useFrame(() => {
         // ライトの強度をランダムに変動させる
         const intensityVariation = 0.1 * (Math.random() - 0.5);  // -0.05 から 0.05 の範囲で変動
-        lightRef.current.intensity = Math.max(0.5, lightRef.current.intensity + intensityVariation);  // 最小値を 0.5 に設定
+        lightRef.current.intensity = Math.max(intensity/2, lightRef.current.intensity + intensityVariation);  // 最小値を 0.5 に設定
 
         // ライトの位置をランダムに変動させる
         const positionVariation = 0.05;
@@ -117,9 +117,9 @@ const FlickeringLight = ({ position }) => {
             ref={lightRef}
             position={position}
             color={0xffaa00}  // 炎のような色
-            intensity={1}
-            distance={5}  // 照らす距離
-            decay={2}  // 光の減衰
+            intensity={intensity} // 強度
+            distance={distance}  // 照らす距離
+            decay={decay}  // 光の減衰
         />
     );
 };
@@ -127,7 +127,19 @@ const FlickeringLight = ({ position }) => {
 useGLTF.preload(CampModelPath)
 useGLTF.preload(FireModelPath)
 
-export default function CampFire() {
+export default function CampFire({ fireLevel }) {
+    const[fireHight, setFireHight ] = useState(0)
+    const[fireLightDistance, setFireLightDistance ] = useState(5)
+    const[fireLightDecay, setFireLightDecay ] = useState(1)
+    const[fireLightIntensity, setFireLightIntensity ] = useState(5)
+    const[fireLightHight, setFireLightHight ] = useState(0)
+    useEffect(() => {
+        setFireHight(fireLevel-9)// 火の元の高さ0~-9
+        setFireLightDecay(fireLevel) //光の減衰1~5
+        setFireLightDistance(fireLevel/2) // 照らす距離4.5~0
+        setFireLightIntensity(fireLevel/2) // 光の強さ4.5~0
+        setFireLightHight(fireLevel/2 - 4)// 火の粉の高さ0.5~-4
+    }, [fireLevel])
 
     return (
         <>
@@ -137,26 +149,28 @@ export default function CampFire() {
             >
                 <OrbitControls
                     enableRotate={true}      // 回転を有効にする
-                    maxPolarAngle={Math.PI/4}   // 上方向の最大角度
-                    minPolarAngle={Math.PI/4}   // 下方向の最小角度 
+                    maxPolarAngle={Math.PI / 4}   // 上方向の最大角度
+                    minPolarAngle={Math.PI / 4}   // 下方向の最小角度 
                     target={[0, 0, 0]}
                 />
                 <directionalLight
                     position={[0, 10, 0]}
                     target-position={[0, 0, 0]}
                 />
-                <FlickeringLight position={[0, 0, 0]} />
-                <FlickeringLight position={[0, 1, 0]} />
-                <FlickeringLight position={[0, 1, 0]} />
-                <FlickeringLight position={[0, 3, 0]} />
+                <FlickeringLight position={[0, fireLightHight+4, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity}/>
+                <FlickeringLight position={[0, fireLightHight+3, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity}/>
+                <FlickeringLight position={[0, fireLightHight+2, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity}/>
+                <FlickeringLight position={[0, fireLightHight+1, 0]} distance={fireLightDistance} decay={fireLightDecay} intensity={fireLightIntensity}/>
                 <Suspense >
                     <group rotation={[0, 0, 0]}>
                         <Camp position={[0, 0, 0]} rotation={[0, 1, 0]} scale={1} />
-                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={100} />
-                        <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={200} />
-                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={300} />
-                        <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={400} />
-                        <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={500} />
+                        <group position={[0,fireHight,0]}>
+                            <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={100} />
+                            <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={200} />
+                            <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={300} />
+                            <Fire position={[0, 0.3, 0]} rotation={[0, 0, 0]} scale={1} interval={400} />
+                            <Fire position={[0, 0.2, 0]} rotation={[0, 0, 0]} scale={1} interval={500} />
+                        </group>
                     </group>
                 </Suspense>
             </Canvas>
