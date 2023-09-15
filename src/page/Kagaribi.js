@@ -230,8 +230,10 @@ function Kagaribi() {
         }
     }
 
+    //機能していない
     function stopAllSound() {
         const audios = document.querySelectorAll( "audio" );
+        console.log(audios);
         for(var i=0;i<audios.length;i++){
             audios[ i ].addEventListener( "play", function(){
             for(var j=0;j<audios.length;j++){
