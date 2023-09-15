@@ -9,7 +9,22 @@ import CampFire from '../components/CampFire'
 import { SlArrowUp } from "react-icons/sl"
 
 function Kagaribi() {
+    const [visible, setVisible] = useState(false);
+
     const [fireLevel, setFireLevel] = useState(null); // 0~9が入る
+
+    const patipati = () => {
+        getDownloadURL(ref(storage, 'fire/takibi_new.wav'))
+            .then((url) => {
+                const takibi_wav = new Audio(url);
+                if (fireLevel > 0){
+
+                takibi_wav.play();
+                };
+        });
+
+
+    };
     const [isAllowaudio, setIsAllowaudio] = useState(false)
 
     //録音機能
@@ -34,13 +49,20 @@ function Kagaribi() {
 
     //たきび
     useEffect(() => {
-        // この関数が6分ごとに呼び出される
+        // この関数が10秒ごとに呼び出される
         function callEverySixMinutes() {
-            //console.log(fireLevel);
-            checkFire();
+            console.log(isAllowaudio);
+            
+          //console.log(fireLevel);
+          checkFire();
+          //selectSound();
             if (isAllowaudio) {
-                selectSound()
+                if (!isRecording){
+                    selectSound();
+                    patipati();
+                }
             }
+
         }
 
         const intervalId = setInterval(callEverySixMinutes, 10000);
@@ -51,9 +73,37 @@ function Kagaribi() {
         };
     }, [fireLevel]);
 
+    //録音中は音を停止
     useEffect(() => {
-        checkFire();
-    })
+        // この関数が1秒ごとに呼び出される
+        function callEveryOneSecond() {
+            
+          //console.log(fireLevel);
+            checkFire();
+            if(isRecording){
+            stopAllSound();
+            }
+
+        }
+
+        const new_intervalId = setInterval(callEveryOneSecond, 1000);
+
+        // コンポーネントがアンマウントされたときに、タイマーをクリアする
+        return () => {
+            clearInterval( new_intervalId);
+        };
+    }, [isRecording]);
+
+
+    useEffect(() => {
+          checkFire();
+          if (isAllowaudio) {
+            patipati();
+          };
+
+         
+    })    
+        
 
     const getBlobFromBlobURL = async () => {
         console.log(mediaBlobUrl)
@@ -85,6 +135,7 @@ function Kagaribi() {
         else {
             await stopRecording();
             await setIsRecording(false);
+            setVisible(true);
         }
     };
 
@@ -179,6 +230,19 @@ function Kagaribi() {
         }
     }
 
+    //機能していない
+    function stopAllSound() {
+        const audios = document.querySelectorAll( "audio" );
+        console.log(audios);
+        for(var i=0;i<audios.length;i++){
+            audios[ i ].addEventListener( "play", function(){
+            for(var j=0;j<audios.length;j++){
+            if( audios[ j ]!==this ){ audios[ j ].pause() }
+            }
+            }, false );
+        }
+    }
+
     return (
         <>
             <div className="relative">
@@ -208,7 +272,7 @@ function Kagaribi() {
                             <div className="flex justify-center items-center w-full">
                                 <SlArrowUp className="text-7xl text-center text-white" />
                             </div>
-                            <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>
+                            {visible && <button className="text-white" onClick={saveWavFile}><span className="kanji">音</span><span className="kana">をくべる</span></button>}
                         </div>
                     </div>
                     <div className=" h-[15vh] flex justify-center items-center bg-black text-white border-t border-gray-700">
